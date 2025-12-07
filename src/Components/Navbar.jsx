@@ -7,7 +7,7 @@ import auth from '../Firebase/firebase.config';
 const Navbar = () => {
     const { user } = useContext(AuthContext);
 
-    const handleSignOut = () =>{
+    const handleSignOut = () => {
         signOut(auth)
     }
 
@@ -38,9 +38,15 @@ const Navbar = () => {
                 <ul className="menu menu-horizontal px-1">
                     <li><Link to='/'>Home</Link></li>
                     <li><Link to='/services'>Services</Link></li>
-                    <li><Link to={'/profile'}>My Profile</Link></li>
-                    <li><Link to={'/add-services'}>Add Services</Link></li>
-                    <li><Link to={'/my-services'}>My Services</Link></li>
+                    {
+                        user && (
+                            <>
+                                <li><Link to={'/profile'}>My Profile</Link></li>
+                                <li><Link to={'/add-services'}>Add Services</Link></li>
+                                <li><Link to={'/my-services'}>My Services</Link></li>
+                            </>
+                        )
+                    }
                 </ul>
             </div>
             {

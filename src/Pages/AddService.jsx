@@ -1,10 +1,12 @@
 import React, { useContext, useState } from 'react';
 import { AuthContext } from '../Provider/AuthProvider';
 import axios from 'axios';
+import { useNavigate } from 'react-router';
 
 const AddService = () => {
 
     const { user } = useContext(AuthContext);
+    const navigation = useNavigate()
 
     const handleSubmit = (e) => {
 
@@ -36,11 +38,13 @@ const AddService = () => {
         console.log(formData)
 
         axios.post('http://localhost:3000/services', formData)
-        .then(res=>{
-            console.log(res);
-        })
+            .then(res => {
+                console.log(res);
+                navigation('/my-services')
+            })
 
     };
+
 
 
     // Generated from deepseek

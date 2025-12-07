@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../Provider/AuthProvider';
 import { Link } from 'react-router';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 const MyServices = () => {
 
@@ -21,6 +22,9 @@ const MyServices = () => {
         axios.delete(`http://localhost:3000/delete/${id}`)
         .then(res => {
             console.log(res.data);
+            const filterData = myServices.filter(service => service._id != id)
+            setMyServices(filterData)
+            toast.success('Successfully deleted!');
         })
         .catch(err =>{
             console.log(err);
