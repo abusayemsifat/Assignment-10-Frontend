@@ -3,22 +3,21 @@ import { useParams } from 'react-router';
 
 const ServiceDetails = () => {
 
-    const [services, setServices] = useState([]);
+    const [service, setService] = useState([]);
     
     const { id } = useParams()
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        fetch('/services.json')
+        fetch(`http://localhost:3000/services/${id}`)
             .then(res => res.json())
             .then(data => {
-                setServices(data)
+                setService(data)
                 setLoading(false)
             })
             .catch(err => console.log(err))
-    }, [])
+    }, [id])
 
-    const findResult = services.find(service => service.serviceId == id)
 
     if(loading){
         return <p>Loading.........</p>
@@ -26,7 +25,8 @@ const ServiceDetails = () => {
 
     return (
         <div className='flex flex-col items-center'>
-            <img className='w-[400px]' src={findResult?.image} alt="" />
+            <img className='w-[400px]' src={service?.image} alt="" />
+            <h1>{service.name}</h1>
         </div>
     );
 };

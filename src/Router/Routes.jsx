@@ -10,6 +10,7 @@ import ServiceDetails from "../Pages/ServiceDetails";
 import ForgetPass from "../Pages/ForgetPass";
 import Error from "../Pages/Error";
 import AddService from "../Pages/AddService";
+import MyServices from "../Pages/MyServices";
 
 const router = createBrowserRouter([
   {
@@ -48,6 +49,10 @@ const router = createBrowserRouter([
       {
         path: '/add-services',
         element: <AddService></AddService>
+      },
+      {
+        path: '/my-services',
+        element: <MyServices></MyServices>
       }
     ]
   },

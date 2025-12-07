@@ -1,15 +1,18 @@
+import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router';
 
 const PopularSection = () => {
 
     const [services, setServices] = useState([]);
 
     useEffect(() => {
-        fetch('./services.json')
-            .then(res => res.json())
-            .then(data => setServices(data))
+        axios.get('http://localhost:3000/services')
+            .then(res => setServices(res.data))
             .catch(err => console.log(err))
     }, [])
+
+    console.log(services)
 
 
     return (
@@ -20,7 +23,7 @@ const PopularSection = () => {
 
             <div className='grid grid-cols-3 mt-12 gap-10'>
                 {
-                    services.slice(0,3).map(service =>
+                    services.slice(0, 3).map(service =>
                         <div className="card bg-base-100 w-96 shadow-sm max-h-[400px]">
                             <figure>
                                 <img className='object-contain object-center'
@@ -28,13 +31,13 @@ const PopularSection = () => {
                                     alt="Shoes" />
                             </figure>
                             <div className="card-body">
-                                <h2 className="card-title">{service?.serviceName}</h2>
+                                <h2 className="card-title">{service?.name}</h2>
                                 <div className='flex justify-between'>
                                     <p>Price: {service?.price}</p>
-                                    <p>Rating: {service.rating}</p>
+                                    <p>Date: {service.date}</p>
                                 </div>
                                 <div className="card-actions justify-end">
-                                    <button className="btn btn-primary">View Details</button>
+                                    <Link to={`/details/${service?._id}`}><button className="btn btn-primary">View Details</button></Link>
                                 </div>
                             </div>
                         </div>

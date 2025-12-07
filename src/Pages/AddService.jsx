@@ -1,5 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { AuthContext } from '../Provider/AuthProvider';
+import axios from 'axios';
 
 const AddService = () => {
 
@@ -14,7 +15,7 @@ const AddService = () => {
 
         const name = form.productName.value;
         const category = form.category.value;
-        const price = form.price.value;
+        const price = parseInt(form.price.value);
         const location = form.location.value;
         const description = form.description.value;
         const image = form.imageUrl.value;
@@ -33,6 +34,11 @@ const AddService = () => {
         }
 
         console.log(formData)
+
+        axios.post('http://localhost:3000/services', formData)
+        .then(res=>{
+            console.log(res);
+        })
 
     };
 
