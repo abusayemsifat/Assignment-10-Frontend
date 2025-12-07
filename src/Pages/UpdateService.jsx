@@ -1,12 +1,14 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { AuthContext } from '../Provider/AuthProvider';
 import axios from 'axios';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
+import { toast } from 'react-hot-toast';
 
 const UpdateService = () => {
     const { user } = useContext(AuthContext);
     const { id } = useParams()
     const [service, setService] = useState()
+    const navigation = useNavigate()
 
     useEffect(() => {
         axios.get(`http://localhost:3000/services/${id}`)
@@ -68,14 +70,17 @@ const UpdateService = () => {
 
         console.log('Updating service:', updatedData);
 
-        axios.put('http://localhost:3000/update', updatedData)
+        axios.put(`http://localhost:3000/update/${id}`, updatedData)
             .then(res => {
                 console.log('Update successful:', res);
+                toast.success('Successfully Updated!');
+                navigation('/my-services')
             })
             .catch(err => {
                 console.log(err);
             });
     };
+    
 
     return (
         <div className="min-h-screen bg-gray-50 py-8 px-4">
