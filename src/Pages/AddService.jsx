@@ -1,9 +1,46 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
+import { AuthContext } from '../Provider/AuthProvider';
 
 const AddService = () => {
+
+    const { user } = useContext(AuthContext);
+
+    const handleSubmit = (e) => {
+
+
+        e.preventDefault();
+        // Form submission logic would go here
+        const form = e.target;
+
+        const name = form.productName.value;
+        const category = form.category.value;
+        const price = form.price.value;
+        const location = form.location.value;
+        const description = form.description.value;
+        const image = form.imageUrl.value;
+        const date = form.pickupDate.value;
+        const email = form.email.value;
+
+        const formData = {
+            name,
+            category,
+            price,
+            location,
+            description,
+            image,
+            date,
+            email,
+        }
+
+        console.log(formData)
+
+    };
+
+
+    // Generated from deepseek
     const [formData, setFormData] = useState({
         category: 'pets',
-        price: 0,
+        price: '',
         email: 'user@example.com'
     });
 
@@ -12,17 +49,19 @@ const AddService = () => {
         setFormData(prev => ({
             ...prev,
             category: selectedCategory,
-            price: selectedCategory === 'pets' ? 0 : prev.price
+            price: selectedCategory === 'pets' ? '0' : ''
         }));
     };
 
     const handlePriceChange = (e) => {
-        const priceValue = parseFloat(e.target.value) || 0;
+        const priceValue = e.target.value;
+        // Allow empty string for non-pet categories
         setFormData(prev => ({
             ...prev,
             price: priceValue
         }));
     };
+
 
     return (
         <div className="min-h-screen bg-gray-50 py-8 px-4">
@@ -35,7 +74,7 @@ const AddService = () => {
                         Fill in the details below to list your pet or pet-related product
                     </p>
 
-                    <form className="space-y-6">
+                    <form onSubmit={handleSubmit} className="space-y-6">
                         {/* Product/Pet Name */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -44,6 +83,7 @@ const AddService = () => {
                             <input
                                 type="text"
                                 name="productName"
+                                required
                                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                                 placeholder="e.g., Golden Retriever Puppy or Premium Dog Food"
                             />
@@ -60,6 +100,7 @@ const AddService = () => {
                                     name="category"
                                     value={formData.category}
                                     onChange={handleCategoryChange}
+                                    required
                                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                                 >
                                     <option value="pets">Pets</option>
@@ -88,15 +129,22 @@ const AddService = () => {
                                         onChange={handlePriceChange}
                                         min="0"
                                         step="0.01"
+                                        required={formData.category !== 'pets'}
                                         disabled={formData.category === 'pets'}
-                                        className={`w-full pl-8 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
-                                            formData.category === 'pets' ? 'bg-gray-100 text-gray-500 cursor-not-allowed border-gray-300' : 'border-gray-300'
-                                        }`}
+                                        className={`w-full pl-8 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${formData.category === 'pets'
+                                            ? 'bg-gray-100 text-gray-500 cursor-not-allowed border-gray-300'
+                                            : 'border-gray-300'
+                                            }`}
+                                        placeholder={formData.category === 'pets' ? '' : 'Enter price'}
                                     />
                                 </div>
-                                {formData.category === 'pets' && (
+                                {formData.category === 'pets' ? (
                                     <p className="mt-1 text-xs text-gray-500">
                                         Price automatically set to $0 for pets
+                                    </p>
+                                ) : (
+                                    <p className="mt-1 text-xs text-gray-500">
+                                        Enter a price greater than 0
                                     </p>
                                 )}
                             </div>
@@ -110,6 +158,7 @@ const AddService = () => {
                             <input
                                 type="text"
                                 name="location"
+                                required
                                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                                 placeholder="e.g., New York, NY or 123 Main St"
                             />
@@ -123,6 +172,7 @@ const AddService = () => {
                             <textarea
                                 name="description"
                                 rows="4"
+                                required
                                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                                 placeholder="Describe the product/pet in detail..."
                             />
@@ -136,6 +186,7 @@ const AddService = () => {
                             <input
                                 type="url"
                                 name="imageUrl"
+                                required
                                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                                 placeholder="https://example.com/image.jpg"
                             />
@@ -159,6 +210,8 @@ const AddService = () => {
                             <input
                                 type="date"
                                 name="pickupDate"
+                                required
+                                min={new Date().toISOString().split('T')[0]}
                                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                             />
                         </div>
@@ -170,8 +223,9 @@ const AddService = () => {
                             </label>
                             <input
                                 type="email"
+                                name="email"
                                 readOnly
-                                value={formData.email}
+                                value={user?.email}
                                 className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 text-gray-600 cursor-not-allowed"
                             />
                             <p className="mt-2 text-sm text-gray-500">
@@ -197,6 +251,7 @@ const AddService = () => {
                     <ul className="text-sm text-blue-700 space-y-1">
                         <li>• Fields marked with * are required</li>
                         <li>• Price is automatically set to 0 for "Pets" category</li>
+                        <li>• Price field is empty by default for non-pet categories</li>
                         <li>• Enter a valid URL for the image</li>
                         <li>• Pickup date must be today or in the future</li>
                         <li>• Your email will be visible to potential buyers</li>
