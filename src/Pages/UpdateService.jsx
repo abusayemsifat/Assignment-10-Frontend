@@ -11,7 +11,7 @@ const UpdateService = () => {
     const navigation = useNavigate()
 
     useEffect(() => {
-        axios.get(`http://localhost:3000/services/${id}`)
+        axios.get(`https://backend-10-kappa.vercel.app/services/${id}`)
             .then(res => {
                 setService(res.data)
             })
@@ -70,7 +70,7 @@ const UpdateService = () => {
 
         console.log('Updating service:', updatedData);
 
-        axios.put(`http://localhost:3000/update/${id}`, updatedData)
+        axios.put(`https://backend-10-kappa.vercel.app/update/${id}`, updatedData)
             .then(res => {
                 console.log('Update successful:', res);
                 toast.success('Successfully Updated!');

@@ -6,20 +6,25 @@ const Services = () => {
 
     const [services, setServices] = useState([]);
     const [category, setCategory] = useState('')
+    const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        fetch(`http://localhost:3000/services?category=${category}`)
+        fetch(`https://backend-10-kappa.vercel.app/services?category=${category}`)
             .then(res => res.json())
             .then(data => setServices(data))
             .catch(err => console.log(err))
+            setLoading(false)
     }, [category])
 
-
+    if(loading){
+        return <span className="loading loading-spinner loading-xl"></span>
+    }
 
     return (
         <div className='px-[145px]'>
             <select onChange={(e) => setCategory(e.target.value)} defaultValue="Choose category" className="select mt-8">
                 <option disabled={true}>Choose category</option>
+                <option value="">All</option>
                 <option value="pets">Pets</option>
                 <option value="food">Food</option>
                 <option value="accessories">Accessories</option>

@@ -10,7 +10,7 @@ const MyServices = () => {
     const { user } = useContext(AuthContext)
 
     useEffect(() => {
-        fetch(`http://localhost:3000/my-services?email=${user?.email}`)
+        fetch(`https://backend-10-kappa.vercel.app/my-services?email=${user?.email}`)
             .then(res => res.json())
             .then(data => setMyServices(data))
             .catch(err => console.log(err))
@@ -19,7 +19,7 @@ const MyServices = () => {
     console.log(myServices)
 
     const handleDelete = (id)=>{
-        axios.delete(`http://localhost:3000/delete/${id}`)
+        axios.delete(`https://backend-10-kappa.vercel.app/delete/${id}`)
         .then(res => {
             console.log(res.data);
             const filterData = myServices.filter(service => service._id != id)
@@ -33,7 +33,6 @@ const MyServices = () => {
 
     return (
         <div>
-            My Services
             <div className="overflow-x-auto">
                 <table className="table">
                     {/* head */}
