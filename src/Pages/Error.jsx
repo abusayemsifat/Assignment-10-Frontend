@@ -1,15 +1,34 @@
-import React from 'react';
-import errImg from '../assets/404.jpg'
+import { Link, useRouteError } from 'react-router-dom';
 
 const Error = () => {
-    return (
-        <div className='flex flex-col items-center justify-center'>
-            <div className='h-full w-full'>
-                <img src={errImg} alt="" className='object-cover' />
-            </div>
-            <a href="https://www.freepik.com/free-vector/error-404-concept-landing-page_4730712.htm#fromView=search&page=1&position=10&uuid=2511b95d-34d1-46ac-babf-634aaf025988&query=404+page+design">Image by pikisuperstar on Freepik</a>
-        </div>
-    );
+  const error  = useRouteError();
+  const is404  = error?.status === 404;
+
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 text-center bg-base-200">
+      <div className="text-8xl mb-6">{is404 ? '🐾' : '⚠️'}</div>
+      <h1 className="text-6xl font-extrabold text-primary mb-3">
+        {is404 ? '404' : 'Oops'}
+      </h1>
+      <h2 className="text-2xl font-bold mb-3">
+        {is404 ? 'Page Not Found' : 'Something went wrong'}
+      </h2>
+      <p className="text-base-content/60 max-w-md mb-8">
+        {is404
+          ? 'This paw trail leads nowhere. The page you are looking for does not exist.'
+          : 'An unexpected error occurred. Our team has been notified.'
+        }
+      </p>
+      <div className="flex gap-3 flex-wrap justify-center">
+        <Link to="/">
+          <button className="btn btn-primary">🏠 Go Home</button>
+        </Link>
+        <Link to="/explore">
+          <button className="btn btn-outline">🔍 Explore Listings</button>
+        </Link>
+      </div>
+    </div>
+  );
 };
 
 export default Error;
