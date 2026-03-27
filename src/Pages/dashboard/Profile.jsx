@@ -3,6 +3,7 @@ import useAuth from '../../context/useAuth';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
 import { getInitials } from '../../utils/helpers';
+import auth from '../../Firebase/firebase.config';
 
 const Profile = () => {
   const { user, dbUser, updateUserProfile, syncWithBackend } = useAuth();
@@ -15,18 +16,67 @@ const Profile = () => {
   const [errors,   setErrors]   = useState({});
   const [pwErrors, setPwErrors] = useState({});
 
+  // Helper function to validate URL length
+  const isUrlTooLong = (url) => {
+    // Firebase has a limit of around 200-300 characters for photoURL
+    return url && url.length > 250;
+  };
+
   const handleProfileSave = async (e) => {
     e.preventDefault();
-    if (!form.name.trim()) { setErrors({ name: 'Name is required' }); return; }
+    
+    // Validate name
+    if (!form.name.trim()) { 
+      setErrors({ name: 'Name is required' }); 
+      return; 
+    }
+    
+    // Validate photo URL length
+    if (form.photoURL && isUrlTooLong(form.photoURL)) {
+      toast.error('Photo URL is too long. Please use a shorter URL or upload to a service like Imgur.');
+      setErrors({ photoURL: 'URL is too long (max 250 characters)' });
+      return;
+    }
+    
     setSaving(true);
     try {
+      const currentUser = auth.currentUser;
+      if (!currentUser) {
+        throw new Error('You must be logged in to update profile');
+      }
+      
+      // Update Firebase profile (will handle long URLs gracefully)
       await updateUserProfile(form.name, form.photoURL);
-      await api.put('/users/profile', { name: form.name, photoURL: form.photoURL });
-      if (user) await syncWithBackend({ ...user, displayName: form.name, photoURL: form.photoURL });
-      toast.success('Profile updated!');
+      
+      // Update backend database
+      await api.put('/users/profile', { 
+        name: form.name, 
+        photoURL: form.photoURL 
+      });
+      
+      // Sync with backend to refresh user data
+      await syncWithBackend(currentUser);
+      
+      toast.success('Profile updated successfully! 🎉');
       setErrors({});
-    } catch {
-      toast.error('Failed to update profile');
+      
+      // Refresh to show updated data
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
+      
+    } catch (error) {
+      console.error('Profile update error:', error);
+      
+      if (error.code === 'auth/requires-recent-login') {
+        toast.error('Please re-authenticate to update your profile');
+      } else if (error.code === 'auth/invalid-profile-attribute') {
+        toast.error('Photo URL is invalid or too long. Please use a shorter URL.');
+      } else if (error.message === 'No user logged in') {
+        toast.error('Session expired. Please log in again.');
+      } else {
+        toast.error(error.response?.data?.message || 'Failed to update profile');
+      }
     } finally {
       setSaving(false);
     }
@@ -49,7 +99,7 @@ const Profile = () => {
         currentPassword: pwForm.currentPassword,
         newPassword:     pwForm.newPassword,
       });
-      toast.success('Password updated!');
+      toast.success('Password updated successfully! 🔒');
       setPwForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to update password');
@@ -140,17 +190,30 @@ const Profile = () => {
               </label>
               <input
                 value={form.photoURL}
-                onChange={e => setForm(f => ({ ...f, photoURL: e.target.value }))}
-                className="input-field"
+                onChange={e => {
+                  setForm(f => ({ ...f, photoURL: e.target.value }));
+                  setErrors({});
+                }}
+                className={`input-field ${errors.photoURL ? 'border-error' : ''}`}
                 placeholder="https://example.com/photo.jpg"
               />
+              {errors.photoURL && (
+                <p className="text-xs text-error mt-1">{errors.photoURL}</p>
+              )}
               {form.photoURL && (
-                <img
-                  src={form.photoURL}
-                  alt="preview"
-                  className="w-16 h-16 rounded-full object-cover mt-2 border border-base-300"
-                  onError={e => { e.target.style.display = 'none'; }}
-                />
+                <>
+                  <img
+                    src={form.photoURL}
+                    alt="preview"
+                    className="w-16 h-16 rounded-full object-cover mt-2 border border-base-300"
+                    onError={e => { e.target.style.display = 'none'; }}
+                  />
+                  {form.photoURL.length > 200 && (
+                    <p className="text-xs text-warning mt-1">
+                      ⚠️ URL is {form.photoURL.length} characters long. Try to keep it under 250 characters.
+                    </p>
+                  )}
+                </>
               )}
             </div>
             <button

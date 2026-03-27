@@ -21,18 +21,23 @@ const AuthProvider = ({ children }) => {
 
   const syncWithBackend = async (firebaseUser) => {
     try {
+      const currentUser = firebaseUser || auth.currentUser;
+      if (!currentUser) return null;
+      
       const { data } = await api.post('/auth/firebase-sync', {
-        name:     firebaseUser.displayName,
-        email:    firebaseUser.email,
-        photoURL: firebaseUser.photoURL,
-        uid:      firebaseUser.uid,
+        name:     currentUser.displayName || '',
+        email:    currentUser.email,
+        photoURL: currentUser.photoURL || '',
+        uid:      currentUser.uid,
       });
       if (data.token) {
         localStorage.setItem('pawmart_token', data.token);
         setDbUser(data.user);
       }
-    } catch {
-      // backend unreachable — continue anyway
+      return data;
+    } catch (error) {
+      console.error('Sync with backend error:', error);
+      return null;
     }
   };
 
@@ -64,10 +69,47 @@ const AuthProvider = ({ children }) => {
     await signOut(auth);
     localStorage.removeItem('pawmart_token');
     setDbUser(null);
+    setUser(null);
   };
 
-  const updateUserProfile = (name, photoURL) =>
-    updateProfile(auth.currentUser, { displayName: name, photoURL });
+  const updateUserProfile = async (name, photoURL) => {
+    try {
+      if (!auth.currentUser) {
+        throw new Error('No user logged in');
+      }
+      
+      // Try to update Firebase profile, but don't fail if photoURL is too long
+      try {
+        await updateProfile(auth.currentUser, { 
+          displayName: name, 
+          photoURL: photoURL 
+        });
+        console.log('Firebase profile updated successfully');
+      } catch (firebaseError) {
+        // If photoURL is too long, try updating without photoURL
+        if (firebaseError.code === 'auth/invalid-profile-attribute') {
+          console.log('Photo URL too long, updating without photoURL');
+          await updateProfile(auth.currentUser, { 
+            displayName: name
+          });
+        } else {
+          throw firebaseError;
+        }
+      }
+      
+      // Update local user state
+      setUser(prev => ({
+        ...prev,
+        displayName: name,
+        photoURL: photoURL
+      }));
+      
+      return { success: true };
+    } catch (error) {
+      console.error('Firebase profile update error:', error);
+      throw error;
+    }
+  };
 
   const isAdmin = dbUser?.role === 'admin';
 

@@ -1,36 +1,87 @@
-@import "tailwindcss";
-@import "daisyui";
+/* =============================================
+   Tailwind + DaisyUI base setup
+   Correct directives for Tailwind v3
+   ============================================= */
 
-@theme {
-  --color-primary-50:  #f0f9ff;
-  --color-primary-100: #e0f2fe;
-  --color-primary-200: #bae6fd;
-  --color-primary-300: #7dd3fc;
-  --color-primary-400: #38bdf8;
-  --color-primary-500: #0ea5e9;
-  --color-primary-600: #0284c7;
-  --color-primary-700: #0369a1;
-  --color-primary-800: #075985;
-  --color-primary-900: #0c4a6e;
-  --font-sans: 'Inter', system-ui, sans-serif;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+/* ── Scrollbar ───────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
 }
 
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #93c5fd;
+  border-radius: 999px;
+}
+
+/* ── Base resets & global styles ─────────────────────────── */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  /* scroll-behavior: smooth; */
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Custom utilities ────────────────────────────────────── */
 @layer utilities {
   .input-field {
     @apply w-full px-4 py-3 border border-base-300 rounded-xl bg-base-100 text-base-content
-           focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary
-           transition-all duration-200 placeholder:text-base-content/40;
+           focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary
+           transition-all duration-200 placeholder:text-base-content/30 text-sm font-medium;
   }
+
   .card-hover {
-    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-xl;
+    @apply transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-primary/10;
   }
+
   .section-title {
-    @apply text-3xl md:text-4xl font-bold text-center mb-3;
-  }
+  @apply text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-4 text-base-content;
+}
+
   .section-subtitle {
-    @apply text-center text-base-content/60 max-w-xl mx-auto mb-10;
+    @apply text-center text-base-content/50 max-w-2xl mx-auto mb-12 text-base md:text-lg leading-relaxed;
   }
+
   .skeleton-box {
     @apply animate-pulse bg-base-300 rounded-xl;
+  }
+
+  .glass {
+    @apply bg-white/10 backdrop-blur-md border border-white/20;
+  }
+
+  .gradient-text {
+    @apply bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent;
+  }
+
+  .btn-gradient {
+    @apply bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600
+           text-white font-semibold px-6 py-3 rounded-xl transition-all duration-200
+           shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/35
+           hover:-translate-y-0.5 active:translate-y-0;
+  }
+
+  .card-glass {
+    @apply bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm
+           border border-white/50 dark:border-gray-700/50
+           shadow-xl shadow-gray-900/5 dark:shadow-gray-900/20
+           rounded-2xl;
   }
 }

@@ -1,2 +1,93 @@
-@import "tailwindcss";
-@plugin "daisyui";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+@plugin "daisyui" {
+  themes: light --default, dark --prefersdark;
+}
+
+@theme {
+  --color-primary-50:  #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-200: #bfdbfe;
+  --color-primary-300: #93c5fd;
+  --color-primary-400: #60a5fa;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  --color-primary-800: #1e40af;
+  --color-primary-900: #1e3a8a;
+
+  --font-sans: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+}
+
+/* ── Scrollbar ───────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #93c5fd; border-radius: 999px; }
+
+/* ── Base ────────────────────────────────────────────────── */
+* { box-sizing: border-box; }
+
+/* html { scroll-behavior: smooth; } */
+
+body {
+  font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Utilities ───────────────────────────────────────────── */
+@layer utilities {
+
+  .input-field {
+    @apply w-full px-4 py-3 border border-base-300 rounded-xl bg-base-100 text-base-content
+           focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary
+           transition-all duration-200 placeholder:text-base-content/30 text-sm font-medium;
+  }
+
+  .card-hover {
+    @apply transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-primary/10;
+  }
+
+  .section-title {
+    @apply text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-4
+           bg-gradient-to-r from-gray-900 to-gray-600
+           dark:from-white dark:to-gray-300
+           bg-clip-text text-transparent;
+  }
+
+  .section-subtitle {
+    @apply text-center text-base-content/50 max-w-2xl mx-auto mb-12 text-base md:text-lg leading-relaxed;
+  }
+
+  .skeleton-box {
+    @apply animate-pulse bg-base-300 rounded-xl;
+  }
+
+  .glass {
+    @apply bg-white/10 backdrop-blur-md border border-white/20;
+  }
+
+  .gradient-text {
+    @apply bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent;
+  }
+
+  .btn-gradient {
+    @apply bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600
+           text-white font-semibold px-6 py-3 rounded-xl transition-all duration-200
+           shadow-lg shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/35
+           hover:-translate-y-0.5 active:translate-y-0;
+  }
+
+  .card-glass {
+    @apply bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm
+           border border-white/50 dark:border-gray-700/50
+           shadow-xl shadow-gray-900/5 dark:shadow-gray-900/20
+           rounded-2xl;
+  }
+}
