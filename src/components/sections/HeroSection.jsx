@@ -69,9 +69,9 @@ const HeroSection = () => {
   const slide = slides[current];
 
   const titleVariants = {
-    enter:  (d) => ({ x: d * 60, opacity: 0, y: 20 }),
+    enter: (d) => ({ x: d * 60, opacity: 0, y: 20 }),
     center: { x: 0, opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.25, 0.1, 0.25, 1] } },
-    exit:   (d) => ({ x: d * -60, opacity: 0, y: -20, transition: { duration: 0.5 } }),
+    exit: (d) => ({ x: d * -60, opacity: 0, y: -20, transition: { duration: 0.5 } }),
   };
 
   const imageVariants = {
@@ -80,11 +80,23 @@ const HeroSection = () => {
     exit: (d) => ({ x: d * 80, opacity: 0, scale: 1.1, transition: { duration: 0.6 } }),
   };
 
+  const mobileImageVariants = {
+    enter: { opacity: 0, y: -20, scale: 0.9 },
+    center: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.5, delay: 0.2 } },
+    exit: { opacity: 0, y: 20, scale: 0.9, transition: { duration: 0.4 } },
+  };
+
+  const mobileTextVariants = {
+    enter: { opacity: 0, y: 30 },
+    center: { opacity: 1, y: 0, transition: { duration: 0.5, delay: 0.3 } },
+    exit: { opacity: 0, y: -30, transition: { duration: 0.4 } },
+  };
+
   return (
     <section 
       ref={containerRef}
       onMouseMove={handleMouseMove}
-      className={`relative h-[calc(100vh-4rem)] flex items-center overflow-hidden bg-gradient-to-br ${slide.gradient} transition-all duration-1000`}
+      className={`relative h-[calc(100vh-4rem)] overflow-hidden bg-gradient-to-br ${slide.gradient} transition-all duration-1000`}
     >
       {/* Animated floating particles */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -146,12 +158,13 @@ const HeroSection = () => {
         }}
       />
 
-      <div className="relative z-10 w-full overflow-y-auto">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 py-6 sm:py-8 md:py-12 lg:py-16">
-          <div className="flex flex-col lg:grid lg:grid-cols-2 gap-6 md:gap-8 lg:gap-12 items-center">
-            
+      <div className="relative z-10 w-full h-full overflow-y-auto scrollbar-hide">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 py-6 sm:py-8 md:py-12 lg:py-16 min-h-full flex flex-col justify-center">
+          
+          {/* Desktop Layout: Text Left, Image Right */}
+          <div className="hidden lg:grid lg:grid-cols-2 gap-12 items-center">
             {/* Left content - Text Section */}
-            <div className="text-center lg:text-left w-full">
+            <div className="text-left">
               <AnimatePresence mode="wait" custom={direction}>
                 <motion.div
                   key={current}
@@ -166,7 +179,7 @@ const HeroSection = () => {
                     initial={{ scale: 0, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ delay: 0.2, type: 'spring' }}
-                    className="inline-flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/90 text-xs md:text-sm font-semibold mb-3 md:mb-4 lg:mb-6"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/90 text-sm font-semibold mb-6"
                   >
                     <span className="relative flex h-2 w-2">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
@@ -177,19 +190,19 @@ const HeroSection = () => {
 
                   {/* Tag with icon */}
                   <motion.p 
-                    className="text-xs md:text-sm font-semibold uppercase tracking-[0.2em] mb-2 md:mb-3 flex items-center justify-center lg:justify-start gap-2"
+                    className="text-sm font-semibold uppercase tracking-[0.2em] mb-3 flex items-center gap-2"
                     style={{ color: slide.accent }}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.3 }}
                   >
-                    <span className="text-lg md:text-xl">{slide.emoji}</span>
+                    <span className="text-xl">{slide.emoji}</span>
                     {slide.tag}
                   </motion.p>
 
-                  {/* Title */}
+                  {/* Title with text shadow for better visibility */}
                   <motion.h1 
-                    className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extrabold text-white leading-[1.2] md:leading-[1.1] mb-3 md:mb-4 lg:mb-6 whitespace-pre-line"
+                    className="text-5xl lg:text-6xl xl:text-7xl font-extrabold text-white leading-[1.2] mb-6 whitespace-pre-line drop-shadow-lg"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4 }}
@@ -199,7 +212,7 @@ const HeroSection = () => {
 
                   {/* Subtitle */}
                   <motion.p 
-                    className="text-sm md:text-base lg:text-lg text-white/70 leading-relaxed mb-5 md:mb-6 lg:mb-8 max-w-md mx-auto lg:mx-0"
+                    className="text-lg text-white/80 leading-relaxed mb-8 max-w-md"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.5 }}
@@ -209,7 +222,7 @@ const HeroSection = () => {
 
                   {/* CTAs */}
                   <motion.div 
-                    className="flex flex-wrap gap-3 md:gap-4 justify-center lg:justify-start mb-6 md:mb-8"
+                    className="flex flex-wrap gap-4 mb-8"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.6 }}
@@ -218,15 +231,14 @@ const HeroSection = () => {
                       <motion.button
                         whileHover={{ scale: 1.05, y: -2 }}
                         whileTap={{ scale: 0.98 }}
-                        className="group relative px-5 md:px-7 lg:px-8 py-2.5 md:py-3 lg:py-4 bg-white text-gray-900 font-bold rounded-xl md:rounded-2xl shadow-2xl hover:shadow-white/20 transition-all duration-300 text-sm md:text-base overflow-hidden"
+                        className="group relative px-8 py-4 bg-white text-gray-900 font-bold rounded-2xl shadow-2xl hover:shadow-white/20 transition-all duration-300 text-base overflow-hidden"
                       >
                         <span className="relative z-10">{slide.cta.label}</span>
                         <motion.span 
                           className="absolute inset-0 bg-gradient-to-r from-white to-gray-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                         />
                         <motion.span 
-                          className="absolute right-3 md:right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:translate-x-1"
-                          style={{ right: '1rem' }}
+                          className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:translate-x-1"
                         >
                           →
                         </motion.span>
@@ -236,18 +248,43 @@ const HeroSection = () => {
                       <motion.button
                         whileHover={{ scale: 1.05, y: -2 }}
                         whileTap={{ scale: 0.98 }}
-                        className="px-5 md:px-7 lg:px-8 py-2.5 md:py-3 lg:py-4 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold rounded-xl md:rounded-2xl transition-all duration-300 text-sm md:text-base backdrop-blur-sm"
+                        className="px-8 py-4 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold rounded-2xl transition-all duration-300 text-base backdrop-blur-sm"
                       >
                         Learn More
                       </motion.button>
                     </Link>
                   </motion.div>
+
+                  {/* Slide indicators */}
+                  <div className="flex items-center gap-2">
+                    {slides.map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={() => goTo(i)}
+                        className="group relative h-1.5 rounded-full overflow-hidden transition-all duration-300 cursor-pointer"
+                        style={{ 
+                          width: i === current ? '48px' : '24px', 
+                          background: 'rgba(255,255,255,0.2)',
+                        }}
+                      >
+                        {i === current && (
+                          <motion.span
+                            className="absolute inset-0 rounded-full"
+                            style={{ background: slide.accent }}
+                            initial={{ scaleX: 0, originX: 0 }}
+                            animate={{ scaleX: 1 }}
+                            transition={{ duration: 6, ease: 'linear' }}
+                          />
+                        )}
+                      </button>
+                    ))}
+                  </div>
                 </motion.div>
               </AnimatePresence>
             </div>
 
-            {/* Right content - Animated Image (Desktop only) */}
-            <div className="hidden lg:flex justify-center items-center">
+            {/* Right content - Animated Image */}
+            <div className="flex justify-center items-center">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={current}
@@ -333,18 +370,19 @@ const HeroSection = () => {
             </div>
           </div>
 
-          {/* Mobile Image - Small version at bottom */}
-          <div className="lg:hidden flex justify-center mt-4 md:mt-6">
+          {/* Mobile Layout: Image on Top, Text Below */}
+          <div className="lg:hidden flex flex-col items-center justify-center min-h-full">
+            {/* Image at Top */}
             <AnimatePresence mode="wait">
               <motion.div
-                key={current + '-mobile'}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -30 }}
-                transition={{ duration: 0.5, delay: 0.3 }}
-                className="relative"
+                key={current + '-mobile-image'}
+                variants={mobileImageVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                className="relative mb-6"
               >
-                {/* Glow effect for mobile */}
+                {/* Glow effect */}
                 <motion.div
                   className="absolute inset-0 rounded-full blur-2xl"
                   style={{ background: slide.accent, opacity: 0.3 }}
@@ -371,17 +409,17 @@ const HeroSection = () => {
                   }}
                   className="relative"
                 >
-                  <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-full bg-gradient-to-br from-white/20 to-transparent p-1.5">
+                  <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-full bg-gradient-to-br from-white/20 to-transparent p-1.5">
                     <div className="w-full h-full rounded-full bg-white/5 backdrop-blur-sm flex items-center justify-center overflow-hidden">
                       <img
                         src={slide.image}
                         alt={slide.tag}
-                        className="w-24 h-24 sm:w-32 sm:h-32 rounded-full object-cover"
+                        className="w-28 h-28 sm:w-36 sm:h-36 rounded-full object-cover"
                       />
                     </div>
                   </div>
                   
-                  {/* Decorative ring for mobile */}
+                  {/* Decorative ring */}
                   <motion.div
                     className="absolute inset-0 rounded-full border border-white/30"
                     animate={{
@@ -396,7 +434,7 @@ const HeroSection = () => {
                   />
                 </motion.div>
 
-                {/* Small floating emoji */}
+                {/* Floating emoji */}
                 <motion.div
                   className="absolute -top-3 -right-3 text-xl sm:text-2xl"
                   animate={{
@@ -413,37 +451,123 @@ const HeroSection = () => {
                 </motion.div>
               </motion.div>
             </AnimatePresence>
-          </div>
 
-          {/* Slide indicators - Now below image on mobile */}
-          <motion.div 
-            className="flex items-center justify-center lg:justify-start gap-2 mt-6 md:mt-8 lg:mt-10"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.8 }}
-          >
-            {slides.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => goTo(i)}
-                className="group relative h-1 md:h-1.5 rounded-full overflow-hidden transition-all duration-300 cursor-pointer"
-                style={{ 
-                  width: i === current ? '28px' : '20px', 
-                  background: 'rgba(255,255,255,0.2)',
-                }}
+            {/* Text Content Below Image */}
+            <AnimatePresence mode="wait" custom={direction}>
+              <motion.div
+                key={current}
+                custom={direction}
+                variants={mobileTextVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                className="text-center w-full"
               >
-                {i === current && (
-                  <motion.span
-                    className="absolute inset-0 rounded-full"
-                    style={{ background: slide.accent }}
-                    initial={{ scaleX: 0, originX: 0 }}
-                    animate={{ scaleX: 1 }}
-                    transition={{ duration: 6, ease: 'linear' }}
-                  />
-                )}
-              </button>
-            ))}
-          </motion.div>
+                {/* Badge */}
+                <motion.div
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: 0.2, type: 'spring' }}
+                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/90 text-xs font-semibold mb-3"
+                >
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                  </span>
+                  {slide.badge}
+                </motion.div>
+
+                {/* Tag */}
+                <motion.p 
+                  className="text-xs font-semibold uppercase tracking-[0.2em] mb-2 flex items-center justify-center gap-2"
+                  style={{ color: slide.accent }}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <span className="text-lg">{slide.emoji}</span>
+                  {slide.tag}
+                </motion.p>
+
+                {/* Title with text shadow for better visibility */}
+                <motion.h1 
+                  className="text-3xl sm:text-4xl font-extrabold text-white leading-[1.2] mb-3 whitespace-pre-line drop-shadow-lg"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                >
+                  {slide.title}
+                </motion.h1>
+
+                {/* Subtitle */}
+                <motion.p 
+                  className="text-sm text-white/80 leading-relaxed mb-5 max-w-md mx-auto"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
+                >
+                  {slide.sub}
+                </motion.p>
+
+                {/* CTAs */}
+                <motion.div 
+                  className="flex flex-wrap gap-3 justify-center mb-6"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.6 }}
+                >
+                  <Link to={slide.cta.to}>
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="px-5 py-2.5 bg-white text-gray-900 font-bold rounded-xl shadow-2xl text-sm"
+                    >
+                      {slide.cta.label} →
+                    </motion.button>
+                  </Link>
+                  <Link to="/about">
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="px-5 py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold rounded-xl text-sm backdrop-blur-sm"
+                    >
+                      Learn More
+                    </motion.button>
+                  </Link>
+                </motion.div>
+              </motion.div>
+            </AnimatePresence>
+
+            {/* Slide indicators */}
+            <motion.div 
+              className="flex items-center justify-center gap-2 mt-2"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.7 }}
+            >
+              {slides.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => goTo(i)}
+                  className="group relative h-1 rounded-full overflow-hidden transition-all duration-300 cursor-pointer"
+                  style={{ 
+                    width: i === current ? '28px' : '20px', 
+                    background: 'rgba(255,255,255,0.2)',
+                  }}
+                >
+                  {i === current && (
+                    <motion.span
+                      className="absolute inset-0 rounded-full"
+                      style={{ background: slide.accent }}
+                      initial={{ scaleX: 0, originX: 0 }}
+                      animate={{ scaleX: 1 }}
+                      transition={{ duration: 6, ease: 'linear' }}
+                    />
+                  )}
+                </button>
+              ))}
+            </motion.div>
+          </div>
         </div>
       </div>
     </section>
