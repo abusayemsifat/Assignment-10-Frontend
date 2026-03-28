@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { gsap } from 'gsap';
 
 const slides = [
   {
@@ -13,6 +12,7 @@ const slides = [
     cta:      { label: 'Explore Pets', to: '/explore?category=pets' },
     emoji:    '🐕',
     badge:    '12,000+ pets rehomed',
+    image:    'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600&h=600&fit=crop',
   },
   {
     gradient: 'from-[#0f172a] via-[#1e3a5a] to-[#0369a1]',
@@ -23,6 +23,7 @@ const slides = [
     cta:      { label: 'Shop Products', to: '/explore?category=food' },
     emoji:    '🛍️',
     badge:    '850+ quality products',
+    image:    'https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=600&h=600&fit=crop',
   },
   {
     gradient: 'from-[#0f172a] via-[#064e3b] to-[#065f46]',
@@ -33,32 +34,15 @@ const slides = [
     cta:      { label: 'Find Care', to: '/explore?category=care+products' },
     emoji:    '🏥',
     badge:    '200+ verified vets',
+    image:    'https://images.unsplash.com/photo-1576201836106-db1758fd1c97?w=600&h=600&fit=crop',
   },
-];
-
-const stats = [
-  { value: '12K+',  label: 'Pets Rehomed'   },
-  { value: '850+',  label: 'Active Listings' },
-  { value: '3.2K+', label: 'Happy Owners'   },
-  { value: '4.9★',  label: 'App Rating'     },
 ];
 
 const HeroSection = () => {
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState(1);
-  const titleRef = useRef(null);
-  const statsRef = useRef(null);
-
-  useEffect(() => {
-    // GSAP entrance for stats
-    if (statsRef.current) {
-      gsap.fromTo(
-        statsRef.current.children,
-        { y: 30, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.6, stagger: 0.1, delay: 0.8, ease: 'power3.out' }
-      );
-    }
-  }, []);
+  const containerRef = useRef(null);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     const t = setInterval(() => {
@@ -73,145 +57,313 @@ const HeroSection = () => {
     setCurrent(i);
   };
 
+  const handleMouseMove = (e) => {
+    if (containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width - 0.5;
+      const y = (e.clientY - rect.top) / rect.height - 0.5;
+      setMousePosition({ x, y });
+    }
+  };
+
   const slide = slides[current];
 
   const titleVariants = {
-    enter:  (d) => ({ x: d * 60, opacity: 0 }),
-    center: { x: 0, opacity: 1, transition: { duration: 0.6, ease: [0.25, 0.1, 0.25, 1] } },
-    exit:   (d) => ({ x: d * -60, opacity: 0, transition: { duration: 0.4 } }),
+    enter:  (d) => ({ x: d * 60, opacity: 0, y: 20 }),
+    center: { x: 0, opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.25, 0.1, 0.25, 1] } },
+    exit:   (d) => ({ x: d * -60, opacity: 0, y: -20, transition: { duration: 0.5 } }),
+  };
+
+  const imageVariants = {
+    enter: (d) => ({ x: d * -80, opacity: 0, scale: 0.9 }),
+    center: { x: 0, opacity: 1, scale: 1, transition: { duration: 0.8, ease: [0.25, 0.1, 0.25, 1] } },
+    exit: (d) => ({ x: d * 80, opacity: 0, scale: 1.1, transition: { duration: 0.6 } }),
   };
 
   return (
-    <section className={`relative min-h-[70vh] flex items-center overflow-hidden bg-gradient-to-br ${slide.gradient} transition-all duration-1000`}>
-
-      {/* Animated background blobs */}
+    <section 
+      ref={containerRef}
+      onMouseMove={handleMouseMove}
+      className={`relative h-[calc(100vh-4rem)] flex items-center overflow-hidden bg-gradient-to-br ${slide.gradient} transition-all duration-1000`}
+    >
+      {/* Animated floating particles */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <motion.div
-          key={current + '-blob1'}
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 0.15 }}
-          transition={{ duration: 1.5 }}
-          className="absolute -top-20 -right-20 w-96 h-96 rounded-full blur-3xl"
-          style={{ background: slide.accent }}
-        />
-        <motion.div
-          key={current + '-blob2'}
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 0.1 }}
-          transition={{ duration: 1.5, delay: 0.3 }}
-          className="absolute -bottom-20 -left-20 w-80 h-80 rounded-full blur-3xl"
-          style={{ background: slide.accent }}
-        />
-        {/* Grid pattern */}
-        <div
-          className="absolute inset-0 opacity-5"
-          style={{
-            backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)',
-            backgroundSize: '60px 60px',
-          }}
-        />
+        {[...Array(20)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-1 h-1 bg-white/20 rounded-full"
+            initial={{
+              x: Math.random() * window.innerWidth,
+              y: Math.random() * window.innerHeight,
+            }}
+            animate={{
+              y: [null, -100, -200],
+              opacity: [0.3, 0.6, 0],
+            }}
+            transition={{
+              duration: 3 + Math.random() * 5,
+              repeat: Infinity,
+              delay: Math.random() * 5,
+              ease: 'linear',
+            }}
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+            }}
+          />
+        ))}
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-8 py-20 w-full">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
+      {/* 3D Parallax blobs */}
+      <motion.div
+        className="absolute inset-0 pointer-events-none"
+        animate={{
+          x: mousePosition.x * 20,
+          y: mousePosition.y * 20,
+        }}
+        transition={{ type: 'spring', stiffness: 100, damping: 30 }}
+      >
+        <div
+          className="absolute top-1/4 -right-20 w-96 h-96 rounded-full blur-3xl"
+          style={{ background: slide.accent, opacity: 0.2 }}
+        />
+        <div
+          className="absolute bottom-1/4 -left-20 w-80 h-80 rounded-full blur-3xl"
+          style={{ background: slide.accent, opacity: 0.15 }}
+        />
+      </motion.div>
 
-          {/* Left content */}
-          <div>
-            <AnimatePresence mode="wait" custom={direction}>
-              <motion.div
-                key={current}
-                custom={direction}
-                variants={titleVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-              >
-                {/* Badge */}
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/90 text-xs font-semibold mb-6">
-                  <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-                  {slide.badge}
-                </div>
+      {/* Grid pattern with parallax */}
+      <motion.div
+        className="absolute inset-0 opacity-5"
+        animate={{
+          x: mousePosition.x * 10,
+          y: mousePosition.y * 10,
+        }}
+        style={{
+          backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)',
+          backgroundSize: '60px 60px',
+        }}
+      />
 
-                {/* Tag */}
-                <p className="text-sm font-semibold uppercase tracking-[0.2em] mb-3" style={{ color: slide.accent }}>
-                  {slide.tag}
-                </p>
-
-                {/* Title */}
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-[1.1] mb-6 whitespace-pre-line">
-                  {slide.title}
-                </h1>
-
-                {/* Sub */}
-                <p className="text-base md:text-lg text-white/60 leading-relaxed mb-8 max-w-md">
-                  {slide.sub}
-                </p>
-
-                {/* CTAs */}
-                <div className="flex flex-wrap gap-3">
-                  <Link to={slide.cta.to}>
-                    <motion.button
-                      whileHover={{ scale: 1.04 }}
-                      whileTap={{ scale: 0.96 }}
-                      className="px-7 py-3.5 bg-white text-gray-900 font-bold rounded-xl shadow-2xl hover:shadow-white/20 transition-all text-sm"
-                    >
-                      {slide.cta.label} →
-                    </motion.button>
-                  </Link>
-                  <Link to="/about">
-                    <motion.button
-                      whileHover={{ scale: 1.04 }}
-                      whileTap={{ scale: 0.96 }}
-                      className="px-7 py-3.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold rounded-xl transition-all text-sm backdrop-blur-sm"
-                    >
-                      Learn More
-                    </motion.button>
-                  </Link>
-                </div>
-              </motion.div>
-            </AnimatePresence>
-
-            {/* Slide indicators */}
-            <div className="flex items-center gap-3 mt-10">
-              {slides.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => goTo(i)}
-                  className="relative h-1 rounded-full overflow-hidden transition-all duration-300"
-                  style={{ width: i === current ? '32px' : '8px', background: 'rgba(255,255,255,0.3)' }}
+      <div className="relative z-10 w-full">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 py-12 md:py-16">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            
+            {/* Left content */}
+            <div>
+              <AnimatePresence mode="wait" custom={direction}>
+                <motion.div
+                  key={current}
+                  custom={direction}
+                  variants={titleVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
                 >
-                  {i === current && (
-                    <motion.span
-                      className="absolute inset-0 rounded-full"
-                      style={{ background: slide.accent }}
-                      initial={{ scaleX: 0, originX: 0 }}
-                      animate={{ scaleX: 1 }}
-                      transition={{ duration: 6, ease: 'linear' }}
+                  {/* Animated badge */}
+                  <motion.div
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: 0.2, type: 'spring' }}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/90 text-xs font-semibold mb-6"
+                  >
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                    </span>
+                    {slide.badge}
+                  </motion.div>
+
+                  {/* Tag with icon */}
+                  <motion.p 
+                    className="text-sm font-semibold uppercase tracking-[0.2em] mb-3 flex items-center gap-2"
+                    style={{ color: slide.accent }}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.3 }}
+                  >
+                    <span className="text-xl">{slide.emoji}</span>
+                    {slide.tag}
+                  </motion.p>
+
+                  {/* Title */}
+                  <motion.h1 
+                    className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white leading-[1.1] mb-6 whitespace-pre-line"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                  >
+                    {slide.title}
+                  </motion.h1>
+
+                  {/* Subtitle */}
+                  <motion.p 
+                    className="text-base md:text-lg text-white/70 leading-relaxed mb-8 max-w-md"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 }}
+                  >
+                    {slide.sub}
+                  </motion.p>
+
+                  {/* CTAs */}
+                  <motion.div 
+                    className="flex flex-wrap gap-4"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.6 }}
+                  >
+                    <Link to={slide.cta.to}>
+                      <motion.button
+                        whileHover={{ scale: 1.05, y: -2 }}
+                        whileTap={{ scale: 0.98 }}
+                        className="group relative px-8 py-4 bg-white text-gray-900 font-bold rounded-2xl shadow-2xl hover:shadow-white/20 transition-all duration-300 text-base overflow-hidden"
+                      >
+                        <span className="relative z-10">{slide.cta.label}</span>
+                        <motion.span 
+                          className="absolute inset-0 bg-gradient-to-r from-white to-gray-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                        />
+                        <motion.span 
+                          className="absolute right-4 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:translate-x-1"
+                          style={{ right: '1.5rem' }}
+                        >
+                          →
+                        </motion.span>
+                      </motion.button>
+                    </Link>
+                    <Link to="/about">
+                      <motion.button
+                        whileHover={{ scale: 1.05, y: -2 }}
+                        whileTap={{ scale: 0.98 }}
+                        className="px-8 py-4 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold rounded-2xl transition-all duration-300 text-base backdrop-blur-sm"
+                      >
+                        Learn More
+                      </motion.button>
+                    </Link>
+                  </motion.div>
+                </motion.div>
+              </AnimatePresence>
+
+              {/* Slide indicators */}
+              <motion.div 
+                className="flex items-center gap-2 mt-10"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.8 }}
+              >
+                {slides.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => goTo(i)}
+                    className="group relative h-1.5 rounded-full overflow-hidden transition-all duration-300 cursor-pointer"
+                    style={{ 
+                      width: i === current ? '48px' : '24px', 
+                      background: 'rgba(255,255,255,0.2)',
+                    }}
+                  >
+                    {i === current && (
+                      <motion.span
+                        className="absolute inset-0 rounded-full"
+                        style={{ background: slide.accent }}
+                        initial={{ scaleX: 0, originX: 0 }}
+                        animate={{ scaleX: 1 }}
+                        transition={{ duration: 6, ease: 'linear' }}
+                      />
+                    )}
+                  </button>
+                ))}
+              </motion.div>
+            </div>
+
+            {/* Right content - Animated Image */}
+            <div className="flex justify-center items-center">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={current}
+                  custom={direction}
+                  variants={imageVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  className="relative"
+                >
+                  {/* Glow effect */}
+                  <motion.div
+                    className="absolute inset-0 rounded-full blur-3xl"
+                    style={{ background: slide.accent, opacity: 0.3 }}
+                    animate={{
+                      scale: [1, 1.2, 1],
+                      opacity: [0.3, 0.5, 0.3],
+                    }}
+                    transition={{
+                      duration: 3,
+                      repeat: Infinity,
+                      ease: 'easeInOut',
+                    }}
+                  />
+                  
+                  {/* Main image with floating animation */}
+                  <motion.div
+                    animate={{
+                      y: [0, -15, 0],
+                    }}
+                    transition={{
+                      duration: 4,
+                      repeat: Infinity,
+                      ease: 'easeInOut',
+                    }}
+                    className="relative"
+                  >
+                    <div className="w-72 h-72 md:w-96 md:h-96 rounded-full bg-gradient-to-br from-white/20 to-transparent p-2">
+                      <div className="w-full h-full rounded-full bg-white/5 backdrop-blur-sm flex items-center justify-center overflow-hidden">
+                        <motion.img
+                          src={slide.image}
+                          alt={slide.tag}
+                          className="w-80 h-80 md:w-[22rem] md:h-[22rem] rounded-full object-cover"
+                          initial={{ scale: 0.8, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          transition={{ duration: 0.8 }}
+                        />
+                      </div>
+                    </div>
+                    
+                    {/* Decorative rings */}
+                    <motion.div
+                      className="absolute inset-0 rounded-full border-2 border-white/20"
+                      animate={{
+                        scale: [1, 1.1, 1],
+                        opacity: [0.3, 0.6, 0.3],
+                      }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: 'easeInOut',
+                      }}
                     />
-                  )}
-                </button>
-              ))}
+                  </motion.div>
+
+                  {/* Floating emoji */}
+                  <motion.div
+                    className="absolute -top-8 -right-8 text-5xl"
+                    animate={{
+                      y: [0, -10, 0],
+                      rotate: [0, 10, 0],
+                    }}
+                    transition={{
+                      duration: 3,
+                      repeat: Infinity,
+                      ease: 'easeInOut',
+                    }}
+                  >
+                    {slide.emoji}
+                  </motion.div>
+                </motion.div>
+              </AnimatePresence>
             </div>
           </div>
-
-          {/* Right — stats grid */}
-          <div ref={statsRef} className="grid grid-cols-2 gap-4">
-            {stats.map((s, i) => (
-              <div
-                key={i}
-                className="bg-white/8 backdrop-blur-sm border border-white/10 rounded-2xl p-6 text-center hover:bg-white/12 transition-colors"
-              >
-                <p className="text-3xl md:text-4xl font-extrabold text-white mb-1">{s.value}</p>
-                <p className="text-sm text-white/50 font-medium">{s.label}</p>
-              </div>
-            ))}
-          </div>
-
         </div>
       </div>
-
-      {/* Bottom fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-base-100 to-transparent" />
     </section>
   );
 };
